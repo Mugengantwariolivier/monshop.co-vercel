@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>MON SHOP</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;background:#0f1220;color:#e9ecf1;margin:0;padding:0}
+    header{padding:16px;display:flex;gap:8px;align-items:center;background:#0b0e19;position:sticky;top:0}
+    input,button{padding:10px;border-radius:10px;border:1px solid #2b2f45;background:#161a2e;color:#e9ecf1}
+    button{cursor:pointer}
+    .pill{background:#1aaa55;border:0;color:white}
+    .container{padding:20px;max-width:1000px;margin:0 auto}
+    .card{background:#12162a;border:1px solid #232848;border-radius:16px;padding:16px;margin:12px 0}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid #232848;text-align:left}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row>*{flex:1}
+    .muted{opacity:.7}
+  </style>
+</head>
+<body>
+  <header>
+    <input id="username" placeholder="username"/>
+    <input id="password" type="password" placeholder="password"/>
+    <button onclick="login()">Login</button>
+    <button class="pill" onclick="registerUser()">Register</button>
+  </header>
+  <div class="container">
+    <h2>Dashboard</h2>
+    <div class="card">
+      <div class="row">
+        <div><strong>Stock In (Today):</strong> <span id="inToday">0</span></div>
+        <div><strong>Stock Out (Today):</strong> <span id="outToday">0</span></div>
+        <div><strong>Total In Stock:</strong> <span id="totalInStock">0</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Items</h3>
+      <div class="row">
+        <input id="itemName" placeholder="Item name"/>
+        <input id="itemCode" placeholder="Code"/>
+        <input id="itemPrice" type="number" placeholder="Price"/>
+        <button onclick="createItem()">Add Item</button>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Code</th><th>Price</th><th>In Stock</th></tr></thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+    </div>
+    <div class="muted">© 2025 MON SHOP CO. LTD</div>
+  </div>
+
+  <script>
+    const api = (path, opts={}) => {
+      opts.headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers||{});
+      const token = localStorage.getItem('token');
+      if(token) opts.headers['Authorization'] = 'Bearer ' + token;
+      return fetch('/api' + path, opts).then(r => r.json());
+    };
+
+    async function registerUser(){
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      if(!username || !password) return alert('enter username + password');
+      const res = await api('/register',{method:'POST', body:JSON.stringify({username,password})});
+      if(res.error){ alert(res.error); return; }
+      localStorage.setItem('token', res.token);
+      alert('Registered as ' + res.user.username);
+      refresh();
+    }
+
+    async function login(){
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const res = await api('/login',{method:'POST', body:JSON.stringify({username,password})});
+      if(res.error){ alert(res.error); return; }
+      localStorage.setItem('token', res.token);
+      alert('Welcome ' + res.user.username);
+      refresh();
+    }
+
+    async function createItem(){
+      const name = document.getElementById('itemName').value.trim();
+      const code = document.getElementById('itemCode').value.trim();
+      const price = Number(document.getElementById('itemPrice').value||0);
+      const res = await api('/items',{method:'POST', body:JSON.stringify({name, code, price})});
+      if(res.error){ alert(res.error); return; }
+      document.getElementById('itemName').value='';
+      document.getElementById('itemCode').value='';
+      document.getElementById('itemPrice').value='';
+      refresh();
+    }
+
+    async function refresh(){
+      const summary = await api('/stock/summary');
+      if(!summary || summary.error){ return; }
+      const tbody = document.getElementById('itemsBody');
+      tbody.innerHTML = '';
+      let total=0;
+      summary.forEach(i=>{
+        total += (i.in_stock||0);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i.name}</td><td>${i.code||''}</td><td>${i.price||0}</td><td>${i.in_stock||0}</td>`;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('totalInStock').innerText = total;
+    }
+
+    refresh();
+  </script>
+</body>
+</html>
