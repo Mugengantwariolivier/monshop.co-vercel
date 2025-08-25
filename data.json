@@ -1,0 +1,53 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=",
+      "role": "admin"
+    },
+    {
+      "username": "cashier",
+      "password": "wkZlBzcpPdwY/DVzk9t40ezJ0f0a+VRpEV5KKfmDNZo=",
+      "role": "cashier"
+    },
+    {
+      "username": "viewer",
+      "password": "ZW1gTf26QaJiljzOU2mbvFbNeiwNoa1erUX8SSFBWdY=",
+      "role": "viewer"
+    }
+  ],
+  "items": [
+    {
+      "name": "Sugar 1kg",
+      "sku": "SG-001",
+      "price": 1500,
+      "stock": 50
+    },
+    {
+      "name": "Rice 5kg",
+      "sku": "RC-005",
+      "price": 6500,
+      "stock": 30
+    },
+    {
+      "name": "Cooking Oil 2L",
+      "sku": "CO-002",
+      "price": 4500,
+      "stock": 20
+    }
+  ],
+  "sales": [
+    {
+      "date": "2025-07-01T10:00:00.000Z",
+      "client": "John",
+      "itemId": null,
+      "itemName": "Sugar 1kg",
+      "unitPrice": 1500,
+      "qty": 2,
+      "subtotal": 3000,
+      "tax": 0,
+      "discount": 0,
+      "total": 3000
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+MonShop with data.json: Deploy index.html, logo.jpg, data.json to GitHub Pages. App will seed DB from data.json on first run.
